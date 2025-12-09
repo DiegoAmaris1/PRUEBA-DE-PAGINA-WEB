@@ -405,18 +405,7 @@
 </head>
 <body data-home-page="index.html" data-home-page-title="Inicio" data-path-to-root="./" data-include-products="false" class="u-black u-body u-xl-mode" data-lang="es">
 <script>
-// ===============================
-// CONTROL DE SESIÓN LINKEDIN
-// ===============================
-(function() {
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    const linkedinUser = localStorage.getItem('linkedinUser');
 
-    // Si NO está autenticado → manda a acceso.html
-    if (isAuthenticated !== 'true' || !linkedinUser) {
-        window.location.href = 'acceso.html';
-    }
-})();
 </script>
 
 <!-- ========================================
