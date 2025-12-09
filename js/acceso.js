@@ -3,12 +3,12 @@
 // ============================================
 
 // URL de tu Google Apps Script
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmzU-DPLNLBjFOkGRDC-tqRGu5P2uWYNKBPnMH9lPwgrXdKsXwJMgG14faEabJgEmQhA/exec';
+const GOOGLE_SCRIPT_URL = 'https://diegoamaris1.github.io/PRUEBA-DE-PAGINA-WEB/callback.html';
 
 // Configuración LinkedIn OAuth (REEMPLAZAR CON TUS CREDENCIALES REALES)
 const LINKEDIN_CONFIG = {
     clientId: '77v55d2jj7d9ef',  // 🔑 Reemplazar con tu Client ID
-    redirectUri: 'https://script.google.com/macros/s/AKfycbxmzU-DPLNLBjFOkGRDC-tqRGu5P2uWYNKBPnMH9lPwgrXdKsXwJMgG14faEabJgEmQhA/exec',
+    redirectUri: 'https://diegoamaris1.github.io/PRUEBA-DE-PAGINA-WEB/callback.html',
 
     scope: 'openid profile email',
     authUrl: 'https://www.linkedin.com/oauth/v2/authorization'
