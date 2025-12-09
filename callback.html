@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ Procesando - Diego Amaris</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1d2e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        .container {
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .card {
+            background: rgba(26, 29, 46, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(240, 110, 73, 0.2);
+            border-radius: 24px;
+            padding: 50px 40px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+        }
+        
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 6px solid rgba(255, 255, 255, 0.1);
+            border-top: 6px solid #f06e49;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+        }
+        
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            color: #ff4444;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        
+        .message {
+            color: #a0a0a0;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .user-info {
+            background: rgba(240, 110, 73, 0.1);
+            border: 1px solid rgba(240, 110, 73, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .user-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            border: 4px solid rgba(240, 110, 73, 0.3);
+        }
+        
+        .user-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .user-email {
+            color: #a0a0a0;
+            font-size: 16px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #f06e49 0%, #ff8a6b 100%);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(240, 110, 73, 0.5);
+        }
+        
+        .retry-button {
+            display: inline-block;
+            padding: 14px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+        
+        .debug-info {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            font-size: 12px;
+            font-family: monospace;
+            color: #888;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Estado de carga -->
+            <div id="loading-state">
+                <div class="loader"></div>
+                <h1>Procesando...</h1>
+                <p class="message">Validando tu acceso con LinkedIn</p>
+            </div>
+            
+            <!-- Estado de éxito -->
+            <div id="success-state" class="hidden">
+                <div class="success-icon">✅</div>
+                <h1>¡Bienvenido!</h1>
+                <p class="message">Tu acceso ha sido concedido exitosamente</p>
+                
+                <div class="user-info">
+                    <img id="user-photo" class="user-photo" src="" alt="Foto de perfil" style="display: none;">
+                    <div id="user-name" class="user-name">Cargando...</div>
+                    <div id="user-email" class="user-email">Cargando...</div>
+                </div>
+                
+                <p class="message" style="font-size: 14px;">Redirigiendo en <span id="countdown">3</span> segundos...</p>
+                <a href="index.html" class="cta-button">🚀 Ir ahora</a>
+            </div>
+            
+            <!-- Estado de error -->
+            <div id="error-state" class="hidden">
+                <div class="error-icon">❌</div>
+                <h1>Error de autenticación</h1>
+                <p id="error-message" class="message">
+                    Hubo un problema al procesar tu solicitud.
+                </p>
+                <a href="acceso.html" class="retry-button">← Volver a intentar</a>
+                
+                <div id="debug-info" class="debug-info"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ============================================
+        // CONFIGURACIÓN DEL BACKEND
+        // ============================================
+        
+        // 🔧 USA LA MISMA URL QUE EN acceso.html
+        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbzs4LKQGD95fCAmyoAr-R_puIATBtujeG_sdNB5eKDZTHABEjoO1a720RktxEunvak/exec';
+        
+        // ============================================
+        // FUNCIÓN PARA MOSTRAR DEBUG
+        // ============================================
+        
+        function addDebug(message) {
+            const debugEl = document.getElementById('debug-info');
+            const timestamp = new Date().toLocaleTimeString();
+            debugEl.innerHTML += `[${timestamp}] ${message}<br>`;
+            console.log('🔍', message);
+        }
+        
+        // ============================================
+        // OBTENER PARÁMETROS DE LA URL
+        // ============================================
+        
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                code: params.get('code'),
+                state: params.get('state'),
+                error: params.get('error'),
+                error_description: params.get('error_description')
+            };
+        }
+        
+        // ============================================
+        // PROCESAR CALLBACK DE LINKEDIN
+        // ============================================
+        
+        async function processCallback() {
+            const params = getUrlParams();
+            
+            addDebug('✅ Iniciando proceso de callback');
+            addDebug('📦 Parámetros recibidos: ' + JSON.stringify(params));
+            
+            // Verificar si hay error de LinkedIn
+            if (params.error) {
+                showError('LinkedIn: ' + (params.error_description || params.error));
+                addDebug('❌ Error de LinkedIn: ' + params.error);
+                return;
+            }
+            
+            // Verificar que tengamos el código
+            if (!params.code) {
+                showError('No se recibió código de autorización de LinkedIn');
+                addDebug('❌ No se encontró código en la URL');
+                return;
+            }
+            
+            addDebug('✅ Código recibido: ' + params.code.substring(0, 20) + '...');
+            
+            // Verificar state (seguridad CSRF)
+            const savedState = localStorage.getItem('oauth_state');
+            if (savedState && params.state !== savedState) {
+                showError('Error de seguridad: State no coincide');
+                addDebug('⚠️ State no coincide - Posible ataque CSRF');
+                return;
+            }
+            
+            addDebug('✅ State verificado correctamente');
+            
+            try {
+                addDebug('📡 Enviando código al backend...');
+                addDebug('🔗 Backend URL: ' + BACKEND_URL);
+                
+                // Enviar código al backend para intercambio
+                const response = await fetch(
+                    `${BACKEND_URL}?code=${encodeURIComponent(params.code)}&state=${encodeURIComponent(params.state)}`,
+                    {
+                        method: 'GET',
+                        redirect: 'follow'
+                    }
+                );
+                
+                addDebug('✅ Respuesta recibida del backend (status: ' + response.status + ')');
+                
+                const data = await response.json();
+                addDebug('📦 Datos parseados: ' + JSON.stringify(data));
+                
+                if (data.error) {
+                    showError(data.message || 'Error desconocido del servidor');
+                    addDebug('❌ Error del servidor: ' + data.message);
+                    return;
+                }
+                
+                if (!data.user) {
+                    showError('No se recibieron datos del usuario');
+                    addDebug('❌ Respuesta sin datos de usuario');
+                    return;
+                }
+                
+                addDebug('🎉 Autenticación exitosa!');
+                
+                // Guardar en localStorage PRIMERO
+                localStorage.setItem('isAuthenticated', 'true');
+                localStorage.setItem('linkedinUser', JSON.stringify(data.user));
+                localStorage.removeItem('oauth_state');
+                
+                addDebug('💾 Datos guardados en localStorage');
+                addDebug('👤 Usuario: ' + data.user.name);
+                
+                // Mostrar éxito con datos del usuario
+                showSuccess(data.user);
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                showError('Error de conexión con el servidor: ' + error.message);
+                addDebug('❌ Error de conexión: ' + error.message);
+                addDebug('📋 Stack: ' + error.stack);
+            }
+        }
+        
+        // ============================================
+        // MOSTRAR ÉXITO
+        // ============================================
+        
+        function showSuccess(user) {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('success-state').classList.remove('hidden');
+            
+            // Actualizar información del usuario
+            document.getElementById('user-name').textContent = user.name || 'Usuario';
+            document.getElementById('user-email').textContent = user.email || 'Email no disponible';
+            
+            // Actualizar foto
+            const photoEl = document.getElementById('user-photo');
+            if (user.picture) {
+                photoEl.src = user.picture;
+                photoEl.style.display = 'block';
+            }
+            
+            // Countdown y redirección
+            let seconds = 3;
+            const countdownEl = document.getElementById('countdown');
+            
+            const interval = setInterval(() => {
+                seconds--;
+                countdownEl.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    const returnUrl = localStorage.getItem('returnUrl') || 'index.html';
+                    localStorage.removeItem('returnUrl');
+                    console.log('🔄 Redirigiendo a:', returnUrl);
+                    window.location.href = returnUrl;
+                }
+            }, 1000);
+        }
+        
+        // ============================================
+        // MOSTRAR ERROR
+        // ============================================
+        
+        function showError(message) {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('error-state').classList.remove('hidden');
+            document.getElementById('error-message').textContent = message;
+        }
+        
+        // ============================================
+        // INICIAR AL CARGAR
+        // ============================================
+        
+        window.addEventListener('load', () => {
+            console.log('🚀 Callback page loaded');
+            processCallback();
+        });
+    </script>
+</body>
+</html>
