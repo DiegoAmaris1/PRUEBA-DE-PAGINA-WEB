@@ -196,7 +196,7 @@
             CLIENT_ID: '77v55d2jj7d9ef',
             
             // URL de tu Google Apps Script (Backend)
-            REDIRECT_URI: 'https://diegoamaris1.github.io/PRUEBA-DE-PAGINA-WEB/callback.html',
+            REDIRECT_URI: 'https://script.google.com/macros/s/AKfycbzs4LKQGD95fCAmyoAr-R_puIATBtujeG_sdNB5eKDZTHABEjoO1a720RktxEunvak/exec',
             
             // Scopes necesarios para OpenID Connect
             SCOPE: 'openid profile email'
@@ -268,9 +268,17 @@
             btn.disabled = true;
             btnText.textContent = 'Conectando...';
             
-            // Generar state aleatorio para seguridad CSRF
-            const state = Math.random().toString(36).substring(2) + Date.now().toString(36);
-            localStorage.setItem('oauth_state', state);
+            // Generar state seguro para OAuth
+function generarStateSeguro() {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Crear y guardar el state
+const state = generarStateSeguro();
+localStorage.setItem('oauth_state', state);
+
             
             // Guardar URL de retorno (por si viene de otra página)
             const returnUrl = new URLSearchParams(window.location.search).get('returnUrl') || 'index.html';
